@@ -42,10 +42,10 @@ bool RBDLInterface::load_model(const std::string &model_file) {
 	}
 }
 
-void RBDLInterface::setViscous(std::vector<double> &viscous) {
-	viscous_.clear();
+void RBDLInterface::setViscous(std::vector<double> &viscous) {	
+	viscous_.clear();	
 	for (size_t i = 0; i < viscous.size(); i++) {
-		viscous_[i] = viscous[i];
+		viscous_.push_back(viscous[i]);
 	}
 }
 
