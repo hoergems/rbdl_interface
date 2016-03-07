@@ -81,11 +81,45 @@ void RBDLInterface::getEEJacobian(std::vector<double> &q,
 	
 }
 
+bool RBDLInterface::forward_dynamics_constraints(std::vector<double> &q, 
+                                                 std::vector<double> &qdot, 
+                                                 std::vector<double> &tau,
+												 std::string &body_name,
+												 std::vector<double> &body_point,
+												 std::vector<double> &world_normal,
+                                                 Eigen::VectorXd &qddot) {
+	unsigned int body_id = model_->mBodyNameMap[body_name];
+		
+	Vector3d bpoint(body_point[0], body_point[1], body_point[2]);
+	Vector3d wnormal(world_normal[0], world_normal[1], world_normal[2]);
+		
+	ConstraintSet constraint_set;
+	constraint_set.AddConstraint(body_id,
+				                 bpoint,
+							     wnormal);
+	constraint_set.Bind(*model_);
+	for (size_t i = 0; i < q.size(); i++) {
+		tau[i] -= viscous_[i] * qdot[i];
+	}
+		
+	q_ = VectorNd::Zero(model_->dof_count);
+	qdot_ = VectorNd::Zero(model_->dof_count);
+	tau_ = VectorNd::Zero(model_->dof_count);
+	for (size_t i = 0; i < q.size(); i++) {
+		q_[i] = q[i];
+		qdot_[i] = qdot[i];
+		tau_[i] = tau[i];
+	}
+		
+	ForwardDynamicsContactsKokkevis(*model_, q_, qdot_, tau_, constraint_set, qddot);	
+	return true;
+}
+
 bool RBDLInterface::forward_dynamics(std::vector<double> &q, 
 			                         std::vector<double> &qdot, 
 			                         std::vector<double> &tau,
 			                         Eigen::VectorXd &qddot) {
-	for (size_t i = 0; i < q.size(); i++) {
+	for (size_t i = 0; i < q.size(); i++) {		
 		tau[i] -= viscous_[i] * qdot[i];
 	}
 	
@@ -98,25 +132,7 @@ bool RBDLInterface::forward_dynamics(std::vector<double> &q,
 		tau_[i] = tau[i];
 	}
 	
-	ForwardDynamics(*model_, q_, qdot_, tau_, qddot);
-	/**for (size_t i = 0; i < q.size(); i++) {
-		if (i == 0) { 
-		    cout << "lower_position_constraints_[i] " << lower_position_constraints_[i] << endl;
-		    cout << "q(i) " << q[i] << endl;
-		}
-		
-		if (q[i] < lower_position_constraints_[i]) {
-			cout << "hello " << i << endl;
-		}
-		if (q[i] < lower_position_constraints_[i] + 0.0001 && qddot(i) < 0) {
-			cout << "set zero!!!" << endl;
-			qddot(i) = 0;
-		}
-		else if (q[i] > upper_position_constraints_[i] - 0.0001 && qddot(i) > 0) {
-			cout << "set zero1!!!" << endl;
-			qddot(i) = 0;
-		}
-	}*/
+	ForwardDynamics(*model_, q_, qdot_, tau_, qddot);	
 	return true;
 }
 
