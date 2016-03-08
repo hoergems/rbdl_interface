@@ -119,6 +119,19 @@ bool RBDLInterface::forward_dynamics(std::vector<double> &q,
 			                         std::vector<double> &qdot, 
 			                         std::vector<double> &tau,
 			                         Eigen::VectorXd &qddot) {
+	//std::vector<Joint> joints = model_->mJoints;
+	/**cout << "joints: ";
+	for (auto &k: joints) {
+		cout << k.q_index << ", ";
+	}
+	cout << endl;
+	
+	std::vector<unsigned int> m_joint_update_order = model_->mJointUpdateOrder;
+	cout << "mJointUpdateOrder: ";
+	for (auto &k: m_joint_update_order) {
+		cout << k << ", ";
+	}
+	cout << endl;*/
 	for (size_t i = 0; i < q.size(); i++) {		
 		tau[i] -= viscous_[i] * qdot[i];
 	}
@@ -132,7 +145,25 @@ bool RBDLInterface::forward_dynamics(std::vector<double> &q,
 		tau_[i] = tau[i];
 	}
 	
-	ForwardDynamics(*model_, q_, qdot_, tau_, qddot);	
+	/**cout << "q: ";
+	for (auto &k: q) {
+		cout << k << ", ";
+	}
+	cout << endl;
+	cout << "qdot: ";
+	for (auto &k: qdot) {
+		cout << k << ", ";
+	}
+	cout << endl;*/
+	
+	
+	ForwardDynamics(*model_, q_, qdot_, tau_, qddot);
+	
+	/**cout << "qddot: ";
+	for (size_t i = 0; i < qddot.size(); i++) {
+		cout << qddot(i) << ", ";
+	}
+	cout << endl;*/
 	return true;
 }
 
