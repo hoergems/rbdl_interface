@@ -23,8 +23,7 @@ bool RBDLInterface::load_model(const std::string &model_file) {
 	if (!Addons::URDFReadFromFile (c, model_, false)) {
 		std::cerr << "Error loading model " << model_file << std::endl;
 		abort();
-	}
-	cout << "loaded model with dof " << model_->dof_count << endl;
+	}	
 		
 	for (std::map<std::string, unsigned int>::iterator it=model_->mBodyNameMap.begin(); it!=model_->mBodyNameMap.end(); ++it) {
 	    std::cout << it->first << " => " << it->second << '\n';
@@ -81,22 +80,48 @@ void RBDLInterface::getEEJacobian(std::vector<double> &q,
 	
 }
 
+bool RBDLInterface::contact_impulse(std::vector<double> &q, 
+                                    std::vector<double> &qdot, 
+                                    std::vector<double> &tau,
+                                    std::string &body_name,
+                                    std::vector<double> &body_point,
+                                    std::vector<double> &world_normal,						              
+                                    Eigen::VectorXd &res) {
+	unsigned int body_id = model_->mBodyNameMap[body_name];	
+	Vector3d bpoint(body_point[0], body_point[1], body_point[2]);
+	Vector3d wnormal(world_normal[0], world_normal[1], world_normal[2]);
+	ConstraintSet constraint_set;
+	constraint_set.AddConstraint(body_id,
+						         bpoint,
+						         Vector3d(0, 0, 1));
+	
+	constraint_set.Bind(*model_);		
+	q_ = VectorNd::Zero(model_->dof_count);
+	qdot_ = VectorNd::Zero(model_->dof_count);	
+	for (size_t i = 0; i < q.size(); i++) {
+		q_[i] = q[i];
+		qdot_[i] = qdot[i];		
+	}
+		
+	ComputeContactImpulsesDirect(*model_, q_, qdot_, constraint_set, res);
+		
+	return true;
+}
+
 bool RBDLInterface::forward_dynamics_constraints(std::vector<double> &q, 
                                                  std::vector<double> &qdot, 
                                                  std::vector<double> &tau,
 												 std::string &body_name,
 												 std::vector<double> &body_point,
-												 std::vector<double> &world_normal,
+												 std::vector<double> &world_normal,												 
                                                  Eigen::VectorXd &qddot) {
-	unsigned int body_id = model_->mBodyNameMap[body_name];
-		
+	unsigned int body_id = model_->mBodyNameMap[body_name];	
 	Vector3d bpoint(body_point[0], body_point[1], body_point[2]);
 	Vector3d wnormal(world_normal[0], world_normal[1], world_normal[2]);
-		
 	ConstraintSet constraint_set;
 	constraint_set.AddConstraint(body_id,
 				                 bpoint,
-							     wnormal);
+				                 wnormal);	
 	constraint_set.Bind(*model_);
 	for (size_t i = 0; i < q.size(); i++) {
 		tau[i] -= viscous_[i] * qdot[i];
@@ -110,28 +135,19 @@ bool RBDLInterface::forward_dynamics_constraints(std::vector<double> &q,
 		qdot_[i] = qdot[i];
 		tau_[i] = tau[i];
 	}
-		
-	ForwardDynamicsContactsKokkevis(*model_, q_, qdot_, tau_, constraint_set, qddot);	
-	return true;
+	
+	ForwardDynamicsContactsDirect(*model_, q_, qdot_, tau_, constraint_set, qddot);
+	
+	return true;	
+	
+	
+	
 }
 
 bool RBDLInterface::forward_dynamics(std::vector<double> &q, 
 			                         std::vector<double> &qdot, 
 			                         std::vector<double> &tau,
-			                         Eigen::VectorXd &qddot) {
-	//std::vector<Joint> joints = model_->mJoints;
-	/**cout << "joints: ";
-	for (auto &k: joints) {
-		cout << k.q_index << ", ";
-	}
-	cout << endl;
-	
-	std::vector<unsigned int> m_joint_update_order = model_->mJointUpdateOrder;
-	cout << "mJointUpdateOrder: ";
-	for (auto &k: m_joint_update_order) {
-		cout << k << ", ";
-	}
-	cout << endl;*/
+			                         Eigen::VectorXd &qddot) {	
 	for (size_t i = 0; i < q.size(); i++) {		
 		tau[i] -= viscous_[i] * qdot[i];
 	}
@@ -145,25 +161,7 @@ bool RBDLInterface::forward_dynamics(std::vector<double> &q,
 		tau_[i] = tau[i];
 	}
 	
-	/**cout << "q: ";
-	for (auto &k: q) {
-		cout << k << ", ";
-	}
-	cout << endl;
-	cout << "qdot: ";
-	for (auto &k: qdot) {
-		cout << k << ", ";
-	}
-	cout << endl;*/
-	
-	
 	ForwardDynamics(*model_, q_, qdot_, tau_, qddot);
-	
-	/**cout << "qddot: ";
-	for (size_t i = 0; i < qddot.size(); i++) {
-		cout << qddot(i) << ", ";
-	}
-	cout << endl;*/
 	return true;
 }
 

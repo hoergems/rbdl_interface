@@ -21,12 +21,20 @@ public:
 			              std::vector<double> &tau,
 			              Eigen::VectorXd &qddot);
 	
+	bool contact_impulse(std::vector<double> &q, 
+                         std::vector<double> &qdot, 
+                         std::vector<double> &tau,
+                         std::string &body_name,
+                         std::vector<double> &body_point,
+                         std::vector<double> &world_normal,						              
+                         Eigen::VectorXd &res);
+	
 	bool forward_dynamics_constraints(std::vector<double> &q, 
 	                                  std::vector<double> &qdot, 
 	                                  std::vector<double> &tau,
 				                      std::string &body_name,
 						              std::vector<double> &body_point,
-						              std::vector<double> &world_normal,
+						              std::vector<double> &world_normal,						              
 	                                  Eigen::VectorXd &qddot);
 	
 	void setViscous(std::vector<double> &viscous);
