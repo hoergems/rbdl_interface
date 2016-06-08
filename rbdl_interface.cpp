@@ -20,7 +20,7 @@ RBDLInterface::RBDLInterface():
 
 bool RBDLInterface::load_model(const std::string &model_file) {
 	const char *c = model_file.c_str();    
-	if (!Addons::URDFReadFromFile (c, model_, false)) {
+	if (!shared::URDFReadFromFile (c, model_, false)) {
 		std::cerr << "Error loading model " << model_file << std::endl;
 		abort();
 	}	
