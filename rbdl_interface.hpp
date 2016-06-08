@@ -2,7 +2,6 @@
 #define RBDL_INTERFACE_HPP_
 #include <iostream>
 #include <rbdl/rbdl.h>
-#include <rbdl/addons/urdfreader/urdfreader.h>
 #include <urdfreader/urdfreader.hpp>
 #include <Eigen/Dense>
 

@@ -34,15 +34,6 @@ if(PKG_CONFIG_FOUND)
     link_directories(${URDFREADER_LIBRARY_DIRS})    
 endif()
 
-if(PKG_CONFIG_FOUND)
-    pkg_check_modules(RBDLURDF rbdl_urdfreader)
-    if (NOT RBDLURDF_FOUND)
-        message(FATAL_ERROR "RBDL_URDFREADER not found")
-    endif()
-    include_directories(${RBDLURDF_INCLUDE_DIRS})
-	link_directories(${RBDLURDF_LIBRARY_DIRS})	
-endif()
-
 ############################# LOAD EIGEN #############################
 if(PKG_CONFIG_FOUND)
     pkg_check_modules(EIGEN eigen3)
@@ -59,8 +50,7 @@ add_library(rbdl_interface SHARED
   
             
 target_link_libraries (rbdl_interface
-                       ${RBDL_LIBRARIES}
-                       ${RBDLURDF_LIBRARIES}
+                       ${RBDL_LIBRARIES}                       
                        ${EIGEN_LIBRARIES}
                        ${URDFREADER_LIBRARIES})
                        
