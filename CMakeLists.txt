@@ -34,6 +34,17 @@ if(PKG_CONFIG_FOUND)
     link_directories(${URDFREADER_LIBRARY_DIRS})    
 endif()
 
+############################# LOAD BOOST #############################
+find_package(Boost ${BOOST_MIN_VERSION} REQUIRED COMPONENTS python system thread timer)
+if (NOT Boost_FOUND)
+    set(Boost_INCLUDE_DIRS "${BOOST_INCLUDE_DIRS}")
+    IF ( NOT Boost_INCLUDE_DIRS )
+        message(FATAL_ERROR "Please point the environment variable BOOST_INCLUDE_DIRS to the include directory of Boost")
+    ENDIF()
+endif ()
+include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
+
 ############################# LOAD EIGEN #############################
 if(PKG_CONFIG_FOUND)
     pkg_check_modules(EIGEN eigen3)
@@ -52,6 +63,7 @@ add_library(rbdl_interface SHARED
 target_link_libraries (rbdl_interface
                        ${RBDL_LIBRARIES}                       
                        ${EIGEN_LIBRARIES}
+                       ${Boost_LIBRARIES}
                        ${URDFREADER_LIBRARIES})
                        
 set(pkg_conf_file_in "${CMAKE_CURRENT_SOURCE_DIR}/rbdl_interface.pc.in")
