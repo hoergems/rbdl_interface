@@ -162,6 +162,7 @@ bool RBDLInterface::forward_dynamics(std::vector<double> &q,
 	}
 	
 	ForwardDynamics(*model_, q_, qdot_, tau_, qddot);
+	
 	return true;
 }
 
