@@ -6,7 +6,7 @@ using namespace RigidBodyDynamics::Math;
 using std::cout;
 using std::endl;
 
-namespace shared
+namespace frapu
 {
 RBDLInterface::RBDLInterface():
     model_(new Model),
