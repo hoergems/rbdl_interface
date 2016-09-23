@@ -23,7 +23,11 @@ RBDLInterface::RBDLInterface():
 bool RBDLInterface::load_model(const std::string& model_file)
 {
     const char* c = model_file.c_str();
-    if (!shared::URDFReadFromFile(c, model_, false)) {
+    /**if (!shared::URDFReadFromFile(c, model_, false, true)) {
+        std::cerr << "Error loading model " << model_file << std::endl;
+        abort();
+    }*/
+    if (!RigidBodyDynamics::Addons::URDFReadFromFile(c, model_, true)) {
         std::cerr << "Error loading model " << model_file << std::endl;
         abort();
     }
@@ -47,13 +51,17 @@ bool RBDLInterface::load_model(const std::string& model_file)
 void RBDLInterface::setViscous(std::vector<double>& viscous)
 {
     viscous_.clear();
+    cout << "SET VISCOUS: ";
     for (size_t i = 0; i < viscous.size(); i++) {
         viscous_.push_back(viscous[i]);
+	cout << viscous[i] << ", ";
     }
+    cout << endl;
 }
 
 void RBDLInterface::setGravity(double& gravity)
 {
+    cout << "SET GRAVITY: " << gravity << endl;
     model_->gravity = Vector3d(0.0, 0.0, -gravity);
 }
 
@@ -170,8 +178,7 @@ bool RBDLInterface::forward_dynamics(std::vector<double>& q,
 
     ForwardDynamics(*model_, q_, qdot_, tau_, qddot);
     
-    cout << "qDDOT2: " << qddot << endl;
-    sleep(100);
+    cout << "qDDOT2: " << qddot << endl;    
 
     return true;
 }

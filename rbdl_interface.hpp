@@ -4,6 +4,7 @@
 #include <rbdl/rbdl.h>
 #include <urdfreader/urdfreader.hpp>
 #include <Eigen/Dense>
+#include <rbdl/addons/urdfreader/urdfreader.h>
 
 using namespace RigidBodyDynamics;
 using namespace RigidBodyDynamics::Math;

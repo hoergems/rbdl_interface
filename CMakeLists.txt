@@ -25,6 +25,18 @@ if(PKG_CONFIG_FOUND)
 	message("RBDL lib dirs ${RBDL_LIBRARY_DIRS}")  
 endif()
 
+if(PKG_CONFIG_FOUND)
+    pkg_check_modules(RBDLURDFREADER rbdl_urdfreader)
+    if (NOT RBDLURDFREADER_FOUND)
+        message(FATAL_ERROR "RBDLURDFREADER not found")
+    endif()
+    include_directories(${RBDLURDFREADER_INCLUDE_DIRS})
+	link_directories(${RBDLURDFREADER_LIBRARY_DIRS}) 
+	message("RBDLURDF inc dirs ${RBDLURDFREADER_INCLUDE_DIRS}") 
+	message("RBDLURDF lib dirs ${RBDLURDFREADER_LIBRARY_DIRS}") 
+	message("RBDLURDF_LIB ${RBDLURDFREADER_LIBRARIES}") 
+endif()
+
 ############################# LOAD URDFREADER #############################
 if(PKG_CONFIG_FOUND)
     pkg_check_modules(URDFREADER urdfreader)
@@ -65,7 +77,7 @@ target_link_libraries (rbdl_interface
                        ${RBDL_LIBRARIES}                       
                        ${EIGEN_LIBRARIES}
                        ${Boost_LIBRARIES}
-                       ${URDFREADER_LIBRARIES})
+                       ${RBDLURDFREADER_LIBRARIES})
                        
 set(pkg_conf_file_in "${CMAKE_CURRENT_SOURCE_DIR}/rbdl_interface.pc.in")
 set(pkg_conf_file_out "${CMAKE_CURRENT_BINARY_DIR}/rbdl_interface.pc")
