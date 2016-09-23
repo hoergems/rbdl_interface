@@ -158,6 +158,7 @@ bool RBDLInterface::forward_dynamics(std::vector<double>& q,
                                      std::vector<double>& tau,
                                      Eigen::VectorXd& qddot)
 {
+    cout << "do integration" << endl;
     q_ = VectorNd::Zero(model_->dof_count);
     qdot_ = VectorNd::Zero(model_->dof_count);
     tau_ = VectorNd::Zero(model_->dof_count);
@@ -168,6 +169,9 @@ bool RBDLInterface::forward_dynamics(std::vector<double>& q,
     }
 
     ForwardDynamics(*model_, q_, qdot_, tau_, qddot);
+    
+    cout << "qDDOT2: " << qddot << endl;
+    sleep(100);
 
     return true;
 }
