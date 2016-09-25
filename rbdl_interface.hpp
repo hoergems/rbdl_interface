@@ -4,7 +4,7 @@
 #include <rbdl/rbdl.h>
 #include <urdfreader/urdfreader.hpp>
 #include <Eigen/Dense>
-#include <rbdl/addons/urdfreader/urdfreader.h>
+//#include <rbdl/addons/urdfreader/urdfreader.h>
 
 using namespace RigidBodyDynamics;
 using namespace RigidBodyDynamics::Math;
@@ -22,6 +22,9 @@ public:
                           std::vector<double>& qdot,
                           std::vector<double>& tau,
                           Eigen::VectorXd& qddot);
+    
+    bool forwardDynamics(double *vals,
+                         Eigen::VectorXd& res);
 
     bool contact_impulse(std::vector<double>& q,
                          std::vector<double>& qdot,

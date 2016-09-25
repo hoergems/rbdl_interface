@@ -77,7 +77,8 @@ target_link_libraries (rbdl_interface
                        ${RBDL_LIBRARIES}                       
                        ${EIGEN_LIBRARIES}
                        ${Boost_LIBRARIES}
-                       ${RBDLURDFREADER_LIBRARIES})
+                       ${RBDLURDFREADER_LIBRARIES}
+                       ${URDFREADER_LIBRARIES})
                        
 set(pkg_conf_file_in "${CMAKE_CURRENT_SOURCE_DIR}/rbdl_interface.pc.in")
 set(pkg_conf_file_out "${CMAKE_CURRENT_BINARY_DIR}/rbdl_interface.pc")

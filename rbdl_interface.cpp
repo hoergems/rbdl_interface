@@ -27,7 +27,7 @@ bool RBDLInterface::load_model(const std::string& model_file)
         std::cerr << "Error loading model " << model_file << std::endl;
         abort();
     }*/
-    if (!RigidBodyDynamics::Addons::URDFReadFromFile(c, model_, true)) {
+    if (!shared::URDFReadFromFile(c, model_, true)) {
         std::cerr << "Error loading model " << model_file << std::endl;
         abort();
     }
@@ -54,7 +54,7 @@ void RBDLInterface::setViscous(std::vector<double>& viscous)
     cout << "SET VISCOUS: ";
     for (size_t i = 0; i < viscous.size(); i++) {
         viscous_.push_back(viscous[i]);
-	cout << viscous[i] << ", ";
+        cout << viscous[i] << ", ";
     }
     cout << endl;
 }
@@ -177,9 +177,26 @@ bool RBDLInterface::forward_dynamics(std::vector<double>& q,
     }
 
     ForwardDynamics(*model_, q_, qdot_, tau_, qddot);
-    
-    cout << "qDDOT2: " << qddot << endl;    
 
+    cout << "qDDOT2: " << qddot << endl;
+
+    return true;
+}
+
+bool RBDLInterface::forwardDynamics(double* vals,
+                                    Eigen::VectorXd& res)
+{
+    //q_ = VectorNd::Zero(model_->dof_count);
+    //qdot_ = VectorNd::Zero(model_->dof_count);
+    //tau_ = VectorNd::Zero(model_->dof_count);
+    for (size_t i = 0; i < model_->dof_count; i++) {
+        q_[i] = vals[i];
+        qdot_[i] = vals[i + model_->dof_count];
+        tau_[i] =
+            vals[i + 2 * model_->dof_count] - viscous_[i] * vals[i + model_->dof_count];
+    }
+    
+    ForwardDynamics(*model_, q_, qdot_, tau_, res);
     return true;
 }
 
